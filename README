@@ -1,0 +1,10 @@
+You should execute next commands to install this project:
+
+* cp phinx.yml.dist phinx.yml and set your config
+* cp config/parameters.php.dist config/parameters.php and set your config
+* composer install
+* vendor/bin/phinx migrate -e development
+
+System requirements:
+* php 7.1
+* postgres
