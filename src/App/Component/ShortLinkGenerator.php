@@ -2,10 +2,10 @@
 
 namespace App\Component;
 
-use App\Component\Url\UrlNormaliser;
-use App\Component\Url\UrlValidator;
-use App\Model\Link;
-use App\Model\LinkRepository;
+use App\Component\Postgres\SequenceGenerator;
+use App\Model\Entity\Link;
+use App\Model\Repository\LinkRepository;
+use App\ValueObject\Url;
 
 class ShortLinkGenerator
 {
@@ -20,54 +20,38 @@ class ShortLinkGenerator
     protected $shortLinkEncoder;
 
     /**
-     * @var UrlNormaliser
-     */
-    protected $urlNormalizer;
-
-    /**
-     * @var UrlValidator
-     */
-    protected $urlValidator;
-
-    /**
-     * @var
+     * @var SequenceGenerator
      */
     protected $sequenceGenerator;
+
+    const LINKS_TABLE_NAME = 'links';
 
     /**
      * @param LinkRepository $linkRepository
      * @param Encoder $shortLinkEncoder
-     * @param UrlNormaliser $urlNormalizer
-     * @param UrlValidator $urlValidator
      * @param $sequenceGenerator
      */
-    public function __construct(LinkRepository $linkRepository, Encoder $shortLinkEncoder, UrlNormaliser $urlNormalizer, UrlValidator $urlValidator, $sequenceGenerator)
+    public function __construct(LinkRepository $linkRepository, Encoder $shortLinkEncoder, SequenceGenerator $sequenceGenerator)
     {
         $this->linkRepository    = $linkRepository;
         $this->shortLinkEncoder  = $shortLinkEncoder;
-        $this->urlNormalizer     = $urlNormalizer;
-        $this->urlValidator      = $urlValidator;
         $this->sequenceGenerator = $sequenceGenerator;
     }
 
 
     /**
-     * @param $fullLink
+     * @param Url $url
      * @return Link
      */
-    public function generate($fullLink)
+    public function generate(Url $url)
     {
-        $url  = $this->urlNormalizer->normalize($fullLink);
-
-        $this->urlValidator->validate($url);
-
-        if ($link = $this->linkRepository->findByFullLink($url)) {
+        if ($link = $this->linkRepository->findOneByUrl($url)) {
             return $link;
         }
 
-        $id        = '';
-        $shortLink = $this->shortLinkEncoder->encode($id, $url);
-        $link      = new Link($id, $fullLink, $shortLink);
+        $id      = $this->sequenceGenerator->generate(self::LINKS_TABLE_NAME);
+        $shortId = $this->shortLinkEncoder->encode($id);
+        $link    = new Link($id, $url, $shortId);
 
         $this->linkRepository->add($link);
 

@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Model;
+namespace App\Model\Entity;
 
-class Link
+use App\ValueObject\Url;
+
+class Link implements \JsonSerializable
 {
     /**
      * @var integer
@@ -10,29 +12,60 @@ class Link
     protected $id;
 
     /**
-     * @var string
+     * @var Url
      */
-    protected $fullLink;
+    protected $url;
 
     /**
      * @var string
      */
-    protected $shortLink;
-
-    /**
-     * @var \DateTime
-     */
-    protected $createdAt;
+    protected $shortId;
 
     /**
      * @param int $id
-     * @param string $fullLink
-     * @param string $shortLink
+     * @param Url $url
+     * @param string $shortId
      */
-    public function __construct($id, $fullLink, $shortLink)
+    public function __construct(int $id, Url $url, string $shortId)
     {
-        $this->id        = $id;
-        $this->fullLink  = $fullLink;
-        $this->shortLink = $shortLink;
+        $this->id      = $id;
+        $this->url     = $url;
+        $this->shortId = $shortId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return Url
+     */
+    public function getUrl(): Url
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShortId(): string
+    {
+        return $this->shortId;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id'       => $this->getId(),
+            'short_id' => $this->getShortId(),
+            'url'      => (string)$this->getUrl()
+        ];
     }
 }

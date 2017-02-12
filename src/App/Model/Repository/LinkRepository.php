@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Model;
+namespace App\Model\Repository;
+
+use App\Model\Entity\Link;
+use App\ValueObject\Url;
 
 interface LinkRepository
 {
@@ -10,14 +13,14 @@ interface LinkRepository
     public function add(Link $link);
 
     /**
-     * @param $fullLink
-     * @return Link
+     * @param Url $url
+     * @return Link|null
      */
-    public function findByFullLink($fullLink);
+    public function findOneByUrl(Url $url) : ?Link;
 
     /**
-     * @param $shortLink
-     * @return Link
+     * @param string $url
+     * @return Link|null
      */
-    public function findByShortLink($shortLink);
+    public function findOneByShortId(string $url) : ?Link;
 }

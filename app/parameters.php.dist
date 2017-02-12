@@ -1,0 +1,10 @@
+<?php
+
+return [
+    'host'    => '127.0.0.1',
+    'dbname'  => 'symfony',
+    'user'    => 'homestead',
+    'pass'    => 'secret',
+    'port'    => '54320',
+    'charset' => 'utf8',
+];

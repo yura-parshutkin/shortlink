@@ -5,12 +5,33 @@ namespace App\Component;
 class Encoder
 {
     /**
-     * @param $from
-     * @param $to
+     * @var array
+     */
+    protected $chars;
+
+    /**
+     * @param array $chars
+     */
+    public function __construct(array $chars)
+    {
+        $this->chars = $chars;
+    }
+
+    /**
+     * @param int $id
      * @return string
      */
-    public function encode($from, $to)
+    public function encode(int $id) :string
     {
-        return '';
+        $length = count($this->chars);
+        $char   = '';
+
+        while ($id > $length) {
+            $diff = $id % $length;
+            $char = $this->chars[$diff] . $char;
+            $id   = ($id - $diff) / $length;
+        }
+
+        return $this->chars[$id] . $char;
     }
 }
